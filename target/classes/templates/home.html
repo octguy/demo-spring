@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang chính - Spring Security Demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .navbar {
+            background: rgba(255,255,255,0.95) !important;
+            backdrop-filter: blur(10px);
+        }
+        .welcome-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            background: rgba(255,255,255,0.95);
+        }
+        .feature-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            height: 100%;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        .icon-large {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        .user-badge {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+        }        .stats-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .navbar .btn-sm {
+            height: 31px;
+            line-height: 1.5;
+            display: inline-flex;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/">
+                🛡️ Spring Security Demo
+            </a>
+            
+            <div class="navbar-nav ms-auto">
+                <span class="navbar-text me-3">
+                    Xin chào, <span sec:authentication="name" class="fw-bold text-primary"></span>!
+                    <span class="user-badge ms-2">
+                        <span sec:authentication="principal.authorities"></span>
+                    </span>
+                </span>
+                <a href="/" class="btn btn-outline-primary btn-sm me-2">Trang chủ</a>
+                <form th:action="@{/logout}" method="post" class="d-inline">
+                    <button type="submit" class="btn btn-outline-danger btn-sm">Đăng xuất</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <!-- Welcome Section -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="card welcome-card">
+                    <div class="card-body p-5 text-center">
+                        <h1 class="display-5 fw-bold text-primary mb-3">
+                            🎉 Chào mừng đến với trang HOME!
+                        </h1>
+                        <p class="lead text-muted mb-4">
+                            Bạn đã đăng nhập thành công với quyền <strong>USER</strong>. 
+                            Đây là khu vực dành riêng cho người dùng đã xác thực.
+                        </p>
+                        
+                        <div class="stats-card">
+                            <h3 class="text-success">Truy cập thành công!</h3>
+                            <p class="mb-0">Spring Security đã xác thực thành công danh tính của bạn</p>
+                        </div>
+                        
+                        <div sec:authorize="hasRole('ADMIN')" class="alert alert-info">
+                            <strong>Bonus:</strong> Bạn có quyền ADMIN! 
+                            <a href="/admin/users" class="btn btn-info btn-sm ms-2">
+                                Vào trang quản lý
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <div class="row">
+            <!-- <div class="col-md-4 mb-4">
+                <div class="card feature-card">
+                    <div class="card-body text-center p-4">
+                        <div class="icon-large">🔐</div>
+                        <h5 class="card-title text-primary">Bảo mật tốt</h5>
+                        <p class="card-text">
+                            Spring Security đã bảo vệ trang này. Chỉ những người dùng đã đăng nhập mới có thể truy cập.
+                        </p>
+                        <div class="badge bg-success">Đã xác thực</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-4">
+                <div class="card feature-card">
+                    <div class="card-body text-center p-4">
+                        <div class="icon-large">💾</div>
+                        <h5 class="card-title text-success">Dữ liệu an toàn</h5>
+                        <p class="card-text">
+                            Thông tin tài khoản của bạn được lưu trữ an toàn trong cơ sở dữ liệu MySQL thông qua JPA.
+                        </p>
+                        <div class="badge bg-primary">JPA Repository</div>
+                    </div>
+                </div>
+            </div> -->
+            
+            <!-- <div class="col-md-4 mb-4">
+                <div class="card feature-card">
+                    <div class="card-body text-center p-4">
+                        <div class="icon-large">🎨</div>
+                        <h5 class="card-title text-info">Giao diện đẹp</h5>
+                        <p class="card-text">
+                            Trang web được xây dựng với Thymeleaf và Bootstrap, tạo ra giao diện hiện đại và responsive.
+                        </p>
+                        <div class="badge bg-warning">Thymeleaf</div>
+                    </div>
+                </div>
+            </div> -->
+        </div>
+
+        <!-- User Info Section -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Thông tin phiên đăng nhập</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Tên đăng nhập:</strong> <span sec:authentication="name" class="text-primary"></span></p>
+                                <p><strong>Quyền hạn:</strong> <span sec:authentication="principal.authorities" class="badge bg-success"></span></p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Trang hiện tại:</strong> <code>/home</code></p>
+                                <p><strong>Trạng thái:</strong> <span class="badge bg-success">Đã xác thực</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Technology Stack -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-secondary text-white">
+                        <h5 class="mb-0">🛠️ Công nghệ sử dụng</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row text-center">
+                            <div class="col-md-3">
+                                <div class="p-3">
+                                    <h6>🍃 Spring Boot</h6>
+                                    <small class="text-muted">Framework chính</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="p-3">
+                                    <h6>🔐 Spring Security</h6>
+                                    <small class="text-muted">Bảo mật & phân quyền</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="p-3">
+                                    <h6>💾 Spring Data JPA</h6>
+                                    <small class="text-muted">Quản lý database</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="p-3">
+                                    <h6>🎨 Thymeleaf</h6>
+                                    <small class="text-muted">Template engine</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="text-center text-white mt-5 py-4">
+        <div class="container">
+            <p class="mb-0">&copy; 2024 Spring Security Demo - Học Spring Boot hiệu quả!</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+

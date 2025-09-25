@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý tài khoản - Admin Panel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .navbar {
+            background: rgba(255,255,255,0.95) !important;
+            backdrop-filter: blur(10px);
+        }
+        .admin-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            background: rgba(255,255,255,0.95);
+        }
+        .admin-badge {
+            background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        .user-table {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .table th {
+            background: linear-gradient(135deg, #495057 0%, #6c757d 100%);
+            color: white;
+            border: none;
+            font-weight: 600;
+        }
+        .btn-action {
+            border-radius: 20px;
+            padding: 6px 12px;
+            font-size: 0.875rem;
+            margin: 2px;
+        }
+        .role-badge {
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .role-admin {
+            background: #dc3545;
+            color: white;
+        }
+        .role-user {
+            background: #28a745;
+            color: white;
+        }
+        .stats-row {
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            border: none;
+            height: 100%;
+        }        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        .navbar .btn-sm {
+            height: 31px;
+            line-height: 1.5;
+            display: inline-flex;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/">
+                Admin Panel - Spring Security Demo
+            </a>
+            
+            <div class="navbar-nav ms-auto">
+                <span class="navbar-text me-3">
+                    Xin chào, <span sec:authentication="name" class="fw-bold text-primary"></span>!
+                    <span class="admin-badge ms-2">
+                        ROLE_ADMIN
+                    </span>
+                </span>
+                <a href="/home" class="btn btn-outline-primary btn-sm me-2">
+                    <i class="fas fa-home me-1"></i>Trang chính
+                </a>
+                <a href="/" class="btn btn-outline-info btn-sm me-2">
+                    <i class="fas fa-globe me-1"></i>Trang chủ
+                </a>
+                <form th:action="@{/logout}" method="post" class="d-inline">
+                    <button type="submit" class="btn btn-outline-danger btn-sm">
+                        <i class="fas fa-sign-out-alt me-1"></i>Đăng xuất
+                    </button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <!-- Header Section -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card admin-card">
+                    <div class="card-body p-4 text-center">
+                        <h1 class="display-6 fw-bold text-primary mb-2">
+                            <i class="fas fa-users-cog me-2"></i>Quản lý tài khoản người dùng
+                        </h1>
+                        <p class="lead text-muted mb-0">
+                            Chào mừng đến với trang quản trị. Bạn có thể xem và quản lý tất cả tài khoản người dùng.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Row -->
+        <div class="row stats-row">
+            <div class="col-md-4">
+                <div class="card stat-card">
+                    <div class="stat-icon text-primary">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3 class="fw-bold" th:text="${users.size()}">0</h3>
+                    <p class="text-muted mb-0">Tổng số tài khoản</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card stat-card">
+                    <div class="stat-icon text-success">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <h3 class="fw-bold" th:text="${#lists.size(#lists.toList(users.?[role.name() == 'USER']))}">0</h3>
+                    <p class="text-muted mb-0">Tài khoản User</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card stat-card">
+                    <div class="stat-icon text-danger">
+                        <i class="fas fa-crown"></i>
+                    </div>
+                    <h3 class="fw-bold" th:text="${#lists.size(#lists.toList(users.?[role.name() == 'ADMIN']))}">0</h3>
+                    <p class="text-muted mb-0">Tài khoản Admin</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card admin-card">
+                    <div class="card-body p-4 text-center">
+                        <h5 class="mb-3">
+                            <i class="fas fa-tools me-2"></i>Thao tác quản lý
+                        </h5>
+                        <button class="btn btn-success btn-action" onclick="alert('Chức năng thêm tài khoản sẽ được phát triển!')">
+                            <i class="fas fa-plus me-1"></i>Thêm tài khoản
+                        </button>
+                        <button class="btn btn-warning btn-action" onclick="alert('Chức năng sửa hàng loạt sẽ được phát triển!')">
+                            <i class="fas fa-edit me-1"></i>Sửa hàng loạt
+                        </button>
+                        <button class="btn btn-danger btn-action" onclick="alert('Chức năng xóa hàng loạt sẽ được phát triển!')">
+                            <i class="fas fa-trash me-1"></i>Xóa hàng loạt
+                        </button>
+                        <button class="btn btn-info btn-action" onclick="refreshData()">
+                            <i class="fas fa-sync-alt me-1"></i>Làm mới
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Users Table -->
+        <div class="row">
+            <div class="col-12">
+                <!-- <div class="card admin-card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-table me-2"></i>Danh sách tài khoản
+                        </h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="user-table">
+                            <table class="table table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">
+                                            <input type="checkbox" class="form-check-input" id="selectAll">
+                                            ID
+                                        </th>
+                                        <th scope="col">
+                                            <i class="fas fa-user me-1"></i>Tên đăng nhập
+                                        </th>
+                                        <th scope="col">
+                                            <i class="fas fa-envelope me-1"></i>Email
+                                        </th>
+                                        <th scope="col">
+                                            <i class="fas fa-shield-alt me-1"></i>Quyền hạn
+                                        </th>
+                                        <th scope="col">
+                                            <i class="fas fa-cogs me-1"></i>Thao tác
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="user, iterStat : ${users}">
+                                        <td>
+                                            <input type="checkbox" class="form-check-input user-checkbox" th:value="${user.id}">
+                                            <span th:text="${user.id}" class="ms-2"></span>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="avatar-circle me-2" th:classappend="${user.role.name() == 'ADMIN'} ? 'bg-danger' : 'bg-success'">
+                                                    <i class="fas fa-user text-white"></i>
+                                                </div>
+                                                <strong th:text="${user.username}"></strong>
+                                            </div>
+                                        </td>
+                                        <td th:text="${user.email}"></td>
+                                        <td>
+                                            <span th:class="'role-badge role-' + ${#strings.toLowerCase(user.role.name())}" 
+                                                  th:text="${user.role.name()}">
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-outline-primary btn-sm btn-action" 
+                                                    th:onclick="'viewUser(' + ${user.id} + ')'">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-outline-warning btn-sm btn-action" 
+                                                    th:onclick="'editUser(' + ${user.id} + ')'">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-outline-danger btn-sm btn-action" 
+                                                    th:onclick="'deleteUser(' + ${user.id} + ', \'' + ${user.username} + '\')'">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(users)}">
+                                        <td colspan="5" class="text-center text-muted py-4">
+                                            <i class="fas fa-users fa-2x mb-2"></i>
+                                            <br>Chưa có tài khoản nào trong hệ thống
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div> -->
+            </div>
+        </div>
+
+        <!-- Demo Info -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card admin-card">
+                    <div class="card-body">
+                        <div class="alert alert-info mb-0">
+                            <h6 class="alert-heading">
+                                <i class="fas fa-info-circle me-2"></i>Thông tin Demo
+                            </h6>
+                            <!-- <p class="mb-2">
+                                <strong>Tính năng đã hoàn thành:</strong>
+                                Xem danh sách tài khoản, phân quyền Admin/User, thống kê cơ bản
+                            </p>
+                            <p class="mb-2">
+                                <strong>Tính năng demo (chưa có logic):</strong>
+                                Thêm/Sửa/Xóa tài khoản - Chỉ hiển thị alert thông báo
+                            </p> -->
+                            <p class="mb-0">
+                                <strong>Bảo mật:</strong>
+                                Chỉ tài khoản có quyền ADMIN mới truy cập được trang này
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="text-center text-white mt-5 py-4">
+        <div class="container">
+            <p class="mb-0">&copy; 2025 Spring Security Demo - Admin Panel</p>
+        </div>
+    </footer>
+
+    <style>
+        .avatar-circle {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Demo functions - chỉ hiển thị alert
+        function viewUser(id) {
+            alert('Xem chi tiết tài khoản ID: ' + id + '\n(Tính năng demo - chưa có logic thực tế)');
+        }
+        
+        function editUser(id) {
+            alert('Sửa tài khoản ID: ' + id + '\n(Tính năng demo - chưa có logic thực tế)');
+        }
+        
+        function deleteUser(id, username) {
+            if (confirm('Bạn có chắc muốn xóa tài khoản "' + username + '"?\n(Tính năng demo - chưa có logic thực tế)')) {
+                alert('Đã xóa tài khoản ID: ' + id + '\n(Thực tế chưa xóa - chỉ là demo)');
+            }
+        }
+        
+        function refreshData() {
+            alert('Đang làm mới dữ liệu...\n(Demo: Reload trang)');
+            window.location.reload();
+        }
+        
+        // Select all functionality
+        document.getElementById('selectAll').addEventListener('change', function() {
+            const checkboxes = document.querySelectorAll('.user-checkbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = this.checked;
+            });
+        });
+        
+        // Show welcome message
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Chào mừng đến với Admin Panel!');
+            console.log('Bạn đang sử dụng quyền ADMIN');
+            console.log('Spring Security đã xác thực thành công');
+        });
+    </script>
+</body>
+</html>
